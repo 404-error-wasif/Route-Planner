@@ -2,8 +2,8 @@ USE dhaka_routes;
 
 -- Passwords: admin123 / user123
 INSERT INTO users (name, email, password_hash, role) VALUES
-('Admin', 'admin@example.com', '$2a$10$xhM3oGpF1r7ODs20eW3P3eY1e7P0FVA8W8Qn43tuamBm1q6gWmboi', 'admin'),
-('Regular User', 'user@example.com', '$2a$10$WnKyl2nDz0Yf4M2vQ5gZPeo3wJ1eGJj3C2V5f6uY.8Ue2Z9m0M9a2', 'regular')
+('Admin', 'admin@example.com', '$2a$10$9DlKw4Sw8pXMcIrHCijfMeIXoi.lqO2zbOS08LCFaE4f8Qj.8XFO.', 'admin'),
+('Regular User', 'user@example.com', '$2a$10$JGp9lluK2XfXGZAtQTthae.1ruuDMCE.2xk0J1mHo0b7a0l3cVcG6', 'regular')
 ON DUPLICATE KEY UPDATE name = VALUES(name), role = VALUES(role);
 
 -- Private pricing bands (BDT per minute)
