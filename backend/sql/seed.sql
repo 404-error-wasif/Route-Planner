@@ -4,7 +4,7 @@ USE dhaka_routes;
 INSERT INTO users (name, email, password_hash, role) VALUES
 ('Admin', 'admin@example.com', '$2a$10$xhM3oGpF1r7ODs20eW3P3eY1e7P0FVA8W8Qn43tuamBm1q6gWmboi', 'admin'),
 ('Regular User', 'user@example.com', '$2a$10$WnKyl2nDz0Yf4M2vQ5gZPeo3wJ1eGJj3C2V5f6uY.8Ue2Z9m0M9a2', 'regular')
-ON DUPLICATE KEY UPDATE name = VALUES(name), password_hash = VALUES(password_hash), role = VALUES(role);
+ON DUPLICATE KEY UPDATE name = VALUES(name), role = VALUES(role);
 
 -- Private pricing bands (BDT per minute)
 INSERT INTO private_pricing (mode, min_per_min, max_per_min) VALUES
