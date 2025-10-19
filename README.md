@@ -20,22 +20,56 @@ Build & run locally: **React (Vite) + Node/Express + MySQL + Leaflet (OpenStreet
 - (Optional) Docker if you want to use `docker-compose`
 
 ## Quick start (no Docker)
-1. **Backend (auto provisions DB)**
+1. **Install dependencies once**
    ```bash
    cd backend
-   cp .env.example .env   # update DB credentials (and optionally ORS key)
-   npm i
-   npm run dev
+   cp .env.example .env   # set DB_USER/DB_PASSWORD to match your MySQL login
+   npm install
    ```
-   Default runs on **http://localhost:4000**
-   > On first boot the API now creates the `dhaka_routes` schema (if missing) and loads the Dhaka public-bus seed automatically. Manual imports remain available via the scripts in `backend/sql/` if you prefer running them yourself.
-2. **Frontend**
    ```bash
    cd ../frontend
-   npm i
+   npm install
+   ```
+2. **Start services in separate terminals**
+   ```bash
+   # Terminal 1
+   cd backend
    npm run dev
    ```
-   Open the shown URL (usually **http://localhost:5173**).
+   ```bash
+   # Terminal 2
+   cd frontend
+   npm run dev
+   ```
+   - API: **http://localhost:4000**
+   - Web app: **http://localhost:5173** (Vite will print the exact URL)
+   - First backend boot automatically creates the `dhaka_routes` schema (if missing), imports the full Dhaka public bus dataset, and refreshes the demo credentials.
+
+### Fresh install checklist (recommended)
+Follow these steps exactly on a clean machine to avoid the “Invalid credentials” popup:
+1. Install **MySQL 8+** and ensure the service is running. Create a user with rights to create databases (or use `root`).
+2. Install **Node.js 18 or newer**. (The project uses ES modules.)
+3. In `backend/.env` set:
+   ```env
+   DB_HOST=localhost
+   DB_USER=<your-mysql-user>
+   DB_PASSWORD=<your-mysql-password>
+   DB_NAME=dhaka_routes
+   ```
+   Leave `PRESERVE_CUSTOM_DEMO_PASSWORDS` unset unless you intentionally change the demo passwords.
+4. From the repository root run the install commands shown above (`npm install` in both `backend/` and `frontend/`).
+5. Start the backend (`npm run dev` inside `backend/`). Watch the console for the message `Database schema verified and seed data applied.`
+6. (Optional) Confirm the data loaded:
+   ```bash
+   mysql -u <user> -p dhaka_routes -e "SELECT email, password_hash FROM users;"
+   mysql -u <user> -p dhaka_routes -e "SELECT COUNT(*) FROM public_routes;"
+   ```
+   You should see the two demo emails and a count of **23** public routes (the 20 buses plus 3 legacy examples).
+7. Start the frontend (`npm run dev` inside `frontend/`) and log in with:
+   - Admin: `admin@example.com` / `admin123`
+   - Regular: `user@example.com` / `user123`
+
+If you ever reseed manually (`mysql < backend/sql/seed.sql`), restart the backend afterwards so it can refresh the hashes to the published defaults.
 
 ## Using Docker (optional)
 - Edit the environment variables in `backend/.env.docker` if needed.

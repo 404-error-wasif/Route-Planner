@@ -2,8 +2,8 @@ USE dhaka_routes;
 
 -- Passwords: admin123 / user123
 INSERT INTO users (name, email, password_hash, role) VALUES
-('Admin', 'admin@example.com', '$2a$10$9DlKw4Sw8pXMcIrHCijfMeIXoi.lqO2zbOS08LCFaE4f8Qj.8XFO.', 'admin'),
-('Regular User', 'user@example.com', '$2a$10$JGp9lluK2XfXGZAtQTthae.1ruuDMCE.2xk0J1mHo0b7a0l3cVcG6', 'regular')
+('Admin', 'admin@example.com', '$2a$10$XeeHVz0.YU4pdZmfWcU/cegM6XUF65MmtoNEvzDJUE1sYxdCxf5M2', 'admin'),
+('Regular User', 'user@example.com', '$2a$10$rhZe/a4ZxWHsEnmZGo4oz.zwgoqFgk4rlxvABy2e86ofFUh/pl3yu', 'regular')
 ON DUPLICATE KEY UPDATE
   name = VALUES(name),
   role = VALUES(role),
