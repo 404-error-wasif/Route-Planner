@@ -1,5 +1,4 @@
 USE dhaka_routes;
-START TRANSACTION;
 
 -- Passwords: admin123 / user123
 INSERT INTO users (name, email, password_hash, role) VALUES
@@ -14,6 +13,8 @@ INSERT INTO private_pricing (mode, min_per_min, max_per_min) VALUES
 ('bike', 2.0, 4.0),
 ('car', 3.5, 7.0)
 ON DUPLICATE KEY UPDATE min_per_min = VALUES(min_per_min), max_per_min = VALUES(max_per_min);
+
+START TRANSACTION;
 
 -- Refresh public transport data so the seed is repeatable
 DELETE FROM public_route_stops;
