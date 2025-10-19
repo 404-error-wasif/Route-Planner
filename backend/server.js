@@ -25,6 +25,9 @@ const legacyHashesByEmail = {
   ]),
 };
 
+const preserveCustomDemoPasswords =
+  process.env.PRESERVE_CUSTOM_DEMO_PASSWORDS === 'true';
+
 async function ensureDefaultAccounts() {
   const defaults = [
     { name: 'Admin', email: 'admin@example.com', password: 'admin123', role: 'admin' },
@@ -49,10 +52,27 @@ async function ensureDefaultAccounts() {
     const user = rows[0];
 
     const legacyHashes = legacyHashesByEmail[entry.email];
-    if (legacyHashes?.has(user.password_hash)) {
+    const hasLegacyHash = legacyHashes?.has(user.password_hash);
+
+    if (hasLegacyHash) {
       const hash = await bcrypt.hash(entry.password, 10);
       await pool.query('UPDATE users SET password_hash=? WHERE id=?', [hash, user.id]);
       user.password_hash = hash;
+    }
+
+    if (!user.password_hash) {
+      const hash = await bcrypt.hash(entry.password, 10);
+      await pool.query('UPDATE users SET password_hash=? WHERE id=?', [hash, user.id]);
+      user.password_hash = hash;
+    }
+
+    if (!preserveCustomDemoPasswords && user.password_hash) {
+      const matches = await bcrypt.compare(entry.password, user.password_hash).catch(() => false);
+      if (!matches) {
+        const hash = await bcrypt.hash(entry.password, 10);
+        await pool.query('UPDATE users SET password_hash=? WHERE id=?', [hash, user.id]);
+        user.password_hash = hash;
+      }
     }
 
     if (user.name !== entry.name || user.role !== entry.role) {
@@ -60,11 +80,6 @@ async function ensureDefaultAccounts() {
         'UPDATE users SET name=?, role=? WHERE id=?',
         [entry.name, entry.role, user.id]
       );
-    }
-
-    if (!user.password_hash) {
-      const hash = await bcrypt.hash(entry.password, 10);
-      await pool.query('UPDATE users SET password_hash=? WHERE id=?', [hash, user.id]);
     }
   }
 }
