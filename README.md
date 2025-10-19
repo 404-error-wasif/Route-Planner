@@ -20,14 +20,7 @@ Build & run locally: **React (Vite) + Node/Express + MySQL + Leaflet (OpenStreet
 - (Optional) Docker if you want to use `docker-compose`
 
 ## Quick start (no Docker)
-1. **Create database & seed**
-   - Create a DB named `dhaka_routes` in MySQL.
-   - Run the SQL files:
-     ```bash
-     mysql -u root -p < backend/sql/schema.sql
-     mysql -u root -p dhaka_routes < backend/sql/seed.sql
-     ```
-2. **Backend**
+1. **Backend (auto provisions DB)**
    ```bash
    cd backend
    cp .env.example .env   # update DB credentials (and optionally ORS key)
@@ -35,7 +28,8 @@ Build & run locally: **React (Vite) + Node/Express + MySQL + Leaflet (OpenStreet
    npm run dev
    ```
    Default runs on **http://localhost:4000**
-3. **Frontend**
+   > On first boot the API now creates the `dhaka_routes` schema (if missing) and loads the Dhaka public-bus seed automatically. Manual imports remain available via the scripts in `backend/sql/` if you prefer running them yourself.
+2. **Frontend**
    ```bash
    cd ../frontend
    npm i
@@ -58,7 +52,7 @@ Build & run locally: **React (Vite) + Node/Express + MySQL + Leaflet (OpenStreet
 ## Notes
 - Public transport data now seeds a curated set of Dhaka city bus lines (BRTC City Service, Tungipara Express, etc.) with geocoded stops so the planner can surface realistic public-route suggestions out of the box, and travel times use the actual stop-to-stop distances captured in that dataset. Extend or adjust them via Admin → “Public Transport Routes”.
 - The backend skips any malformed stop geometry when computing public route metrics and falls back to the remaining valid segments, so reseeding or extending the dataset can never crash the suggestion API; invalid points are simply ignored when no finite lat/lon is present.
-- When the API boots it ensures the demo `admin@example.com` / `admin123` and `user@example.com` / `user123` accounts exist (without overwriting custom passwords), automatically repairs the legacy seed hashes that rejected those passwords, and the seed file continues to preserve any updated demo passwords so login keeps working even if a seed import fails halfway through.
+- When the API boots it now provisions the schema if needed, imports the Dhaka bus dataset, and ensures the demo `admin@example.com` / `admin123` and `user@example.com` / `user123` accounts exist without overwriting custom passwords; legacy broken hashes are repaired automatically so the default logins keep working.
 - Private transport minute-price bands are editable under Admin → “Pricing”. Estimates show **min–max** cost.
 - Blocks: mark segments blocked (with time window). The UI warns users and avoids recommending those segments in mixed routes.
 

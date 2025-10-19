@@ -8,6 +8,7 @@ import adminRoutes from './src/routes/admin.js';
 import routeRoutes from './src/routes/routes.js';
 import statsRoutes from './src/routes/stats.js';
 import geoRoutes from './src/routes/geo.js';
+import { ensureDatabase } from './src/utils/dbSetup.js';
 
 dotenv.config();
 
@@ -83,6 +84,12 @@ app.use('/api/geo', geoRoutes);       // GET  /api/geo/search?q=...
 const PORT = process.env.SERVER_PORT || 4000;
 
 const start = async () => {
+  try {
+    await ensureDatabase();
+  } catch (err) {
+    console.error('Failed to prepare database schema/seed', err);
+  }
+
   try {
     await ensureDefaultAccounts();
   } catch (err) {

@@ -1,8 +1,7 @@
-DROP DATABASE IF EXISTS dhaka_routes;
-CREATE DATABASE dhaka_routes;
+CREATE DATABASE IF NOT EXISTS dhaka_routes;
 USE dhaka_routes;
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100),
   email VARCHAR(120) UNIQUE,
@@ -11,7 +10,7 @@ CREATE TABLE users (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE trips (
+CREATE TABLE IF NOT EXISTS trips (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
   from_name VARCHAR(200),
@@ -24,13 +23,13 @@ CREATE TABLE trips (
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE private_pricing (
+CREATE TABLE IF NOT EXISTS private_pricing (
   mode VARCHAR(40) PRIMARY KEY, -- rickshaw, cab, bike, car
   min_per_min DECIMAL(10,2) NOT NULL,
   max_per_min DECIMAL(10,2) NOT NULL
 );
 
-CREATE TABLE public_routes (
+CREATE TABLE IF NOT EXISTS public_routes (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(120),
   mode ENUM('bus','train','metro') NOT NULL,
@@ -41,7 +40,7 @@ CREATE TABLE public_routes (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE public_route_stops (
+CREATE TABLE IF NOT EXISTS public_route_stops (
   id INT AUTO_INCREMENT PRIMARY KEY,
   route_id INT NOT NULL,
   name VARCHAR(120),
@@ -51,7 +50,7 @@ CREATE TABLE public_route_stops (
   FOREIGN KEY (route_id) REFERENCES public_routes(id)
 );
 
-CREATE TABLE blocked_segments (
+CREATE TABLE IF NOT EXISTS blocked_segments (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(200),
   geometry JSON,
