@@ -1,4 +1,5 @@
 USE dhaka_routes;
+START TRANSACTION;
 
 -- Passwords: admin123 / user123
 INSERT INTO users (name, email, password_hash, role) VALUES
@@ -17,6 +18,8 @@ ON DUPLICATE KEY UPDATE min_per_min = VALUES(min_per_min), max_per_min = VALUES(
 -- Refresh public transport data so the seed is repeatable
 DELETE FROM public_route_stops;
 DELETE FROM public_routes;
+ALTER TABLE public_routes AUTO_INCREMENT = 1;
+ALTER TABLE public_route_stops AUTO_INCREMENT = 1;
 
 -- BRTC City Service: Mirpur-10 → Motijheel
 INSERT INTO public_routes (name, mode, avg_kmh, base_cost, per_km_cost) VALUES
@@ -271,3 +274,5 @@ INSERT INTO public_route_stops (route_id, name, lat, lon, seq) VALUES
 (@route_id, 'Pallabi', 23.8246000, 90.3667000, 2),
 (@route_id, 'Agargaon', 23.7770000, 90.3730000, 3),
 (@route_id, 'Motijheel', 23.7337000, 90.4140000, 4);
+
+COMMIT;

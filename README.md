@@ -56,7 +56,7 @@ Build & run locally: **React (Vite) + Node/Express + MySQL + Leaflet (OpenStreet
 - **Regular**: `user@example.com` / `user123`
 
 ## Notes
-- Public transport data now seeds a curated set of Dhaka city bus lines (BRTC City Service, Tungipara Express, etc.) with geocoded stops so the planner can surface realistic public-route suggestions out of the box. Extend or adjust them via Admin → “Public Transport Routes”.
+- Public transport data now seeds a curated set of Dhaka city bus lines (BRTC City Service, Tungipara Express, etc.) with geocoded stops so the planner can surface realistic public-route suggestions out of the box, and travel times use the actual stop-to-stop distances captured in that dataset. Extend or adjust them via Admin → “Public Transport Routes”.
 - Private transport minute-price bands are editable under Admin → “Pricing”. Estimates show **min–max** cost.
 - Blocks: mark segments blocked (with time window). The UI warns users and avoids recommending those segments in mixed routes.
 
