@@ -39,9 +39,21 @@ router.post('/public-routes', requireAuth('admin'), async (req, res) => {
 router.post('/public-routes/:id/stops', requireAuth('admin'), async (req, res) => {
   const route_id = req.params.id;
   const { name, lat, lon, seq } = req.body;
+  // Insert the new stop for this route
   await pool.query('INSERT INTO public_route_stops (route_id, name, lat, lon, seq) VALUES (?,?,?,?,?)',
     [route_id, name, lat, lon, seq]);
-  res.json({ok:true});
+
+  // After inserting a new stop, rebuild the geometry for the parent route. We
+  // fetch all stops for the route ordered by seq, assemble their
+  // coordinates into a LineString, and update the geometry column. This
+  // ensures the map reflects the complete route.
+  const [rows] = await pool.query('SELECT lat, lon FROM public_route_stops WHERE route_id=? ORDER BY seq', [route_id]);
+  if (rows.length > 1) {
+    const coords = rows.map(s => [parseFloat(s.lon), parseFloat(s.lat)]);
+    const geometry = { type: 'LineString', coordinates: coords };
+    await pool.query('UPDATE public_routes SET geometry=? WHERE id=?', [JSON.stringify(geometry), route_id]);
+  }
+  res.json({ ok: true });
 });
 
 // blocks

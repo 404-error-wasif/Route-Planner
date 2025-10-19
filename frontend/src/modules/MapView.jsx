@@ -30,6 +30,9 @@ export default function MapView({ token, role='regular' }){
   const [route, setRoute] = useState(null)
   const [pub, setPub]     = useState(null)
 
+  // blocked segments fetched from the API
+  const [blocks, setBlocks] = useState([])
+
   const [fromQuery, setFromQuery] = useState('')
   const [toQuery,   setToQuery]   = useState('')
   const [fromSugs,  setFromSugs]  = useState([])
@@ -54,6 +57,19 @@ export default function MapView({ token, role='regular' }){
     } finally { setBusy(false) }
   }
   useEffect(()=>{ calc() }, []) // initial
+
+  // fetch blocked segments on mount
+  useEffect(() => {
+    async function loadBlocks() {
+      try {
+        const { data } = await api.get('/routes/blocked', { headers })
+        setBlocks(Array.isArray(data) ? data : [])
+      } catch (e) {
+        console.error('failed to load blocked segments', e)
+      }
+    }
+    loadBlocks()
+  }, [])
 
   // live suggestions (debounced)
   useEffect(()=>{
@@ -204,6 +220,15 @@ export default function MapView({ token, role='regular' }){
         <Marker position={[from.lat, from.lon]} />
         <Marker position={[to.lat, to.lon]} />
         {route?.geometry && <Polyline positions={route.geometry.coordinates.map(c=>[c[1], c[0]])} />}
+        {/* Draw blocked segments in red */}
+        {blocks.map(block => (
+          block.geometry?.coordinates ? (
+            <Polyline key={block.id}
+              positions={block.geometry.coordinates.map(c => [c[1], c[0]])}
+              pathOptions={{ color: 'red', dashArray: '5 8' }}
+            />
+          ) : null
+        ))}
       </MapContainer>
     </div>
   )

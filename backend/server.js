@@ -6,6 +6,7 @@ import adminRoutes from './src/routes/admin.js';
 import routeRoutes from './src/routes/routes.js';
 import statsRoutes from './src/routes/stats.js';
 import geoRoutes from './src/routes/geo.js';
+import { loadPublicTransport } from './src/seed/loadPublicTransport.js';
 
 dotenv.config();
 
@@ -26,4 +27,15 @@ app.use('/api/stats', statsRoutes);
 app.use('/api/geo', geoRoutes);       // GET  /api/geo/search?q=...
 
 const PORT = process.env.SERVER_PORT || 4000;
-app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`));
+
+// Start the HTTP server and seed the public transport data on startup. The
+// loader is idempotent and will skip routes that already exist.
+app.listen(PORT, async () => {
+  console.log(`API running on http://localhost:${PORT}`);
+  try {
+    const res = await loadPublicTransport();
+    console.log('Public transport seed complete', res);
+  } catch (err) {
+    console.error('Failed to load public transport data', err);
+  }
+});

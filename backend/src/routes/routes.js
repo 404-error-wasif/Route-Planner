@@ -74,4 +74,46 @@ router.post('/trip', requireAuth(), async (req, res) => {
   res.json({ok:true});
 });
 
+// Additional endpoint to fetch blocked segments. This allows both the user
+// and admin interfaces to display road closures or construction zones on
+// the map. It simply returns all entries from the blocked_segments table.
+router.get('/blocked', async (_req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT id, name, geometry, start_time, end_time FROM blocked_segments ORDER BY id DESC')
+    // Convert geometry strings back to objects
+    const blocks = rows.map(row => ({
+      id: row.id,
+      name: row.name,
+      geometry: typeof row.geometry === 'string' ? JSON.parse(row.geometry) : row.geometry,
+      start_time: row.start_time,
+      end_time: row.end_time
+    }))
+    res.json(blocks)
+  } catch (e) {
+    console.error('Failed to fetch blocked segments', e)
+    res.status(500).json({ error: 'server_error' })
+  }
+});
+
 export default router;
+
+// Additional endpoint to fetch blocked segments. This allows both the user
+// and admin interfaces to display road closures or construction zones on
+// the map. It simply returns all entries from the blocked_segments table.
+router.get('/blocked', async (_req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT id, name, geometry, start_time, end_time FROM blocked_segments ORDER BY id DESC')
+    // Convert geometry strings back to objects
+    const blocks = rows.map(row => ({
+      id: row.id,
+      name: row.name,
+      geometry: typeof row.geometry === 'string' ? JSON.parse(row.geometry) : row.geometry,
+      start_time: row.start_time,
+      end_time: row.end_time
+    }))
+    res.json(blocks)
+  } catch (e) {
+    console.error('Failed to fetch blocked segments', e)
+    res.status(500).json({ error: 'server_error' })
+  }
+})
